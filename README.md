@@ -24,7 +24,7 @@ demo repo for a rethink of the Tinkerbell stack architecture
 docker-compose up -d
 ```
 
-2. Add the hardware data to tink-server
+2. Add one of the hardware data json to tink-server
 
 ```bash
 # using the hook operating system installation environment
@@ -38,3 +38,5 @@ docker exec -i tinkerbellnext_tink-cli_1 tink hardware push < ./hardware-data/ne
 ```
 
 3. Boot the machine - make sure the machine you want to PXE is set to boot from the network adapter
+
+Repeat steps 2 and 3 for each of the hardware data file to see the machine boot into the different operating system installation environments
