@@ -1,0 +1,106 @@
+version: "3.8"
+services:
+  tink:
+    image: quay.io/jakobweinstock/tink:server
+    restart: unless-stopped
+    environment:
+      FACILITY: ${FACILITY:-onprem}
+      PGDATABASE: tinkerbell
+      PGHOST: db
+      PGPASSWORD: tinkerbell
+      PGPORT: 5432
+      PGSSLMODE: disable
+      PGUSER: tinkerbell
+      TINKERBELL_GRPC_AUTHORITY: :42113
+      TINKERBELL_HTTP_AUTHORITY: :42114
+      TINK_AUTH_USERNAME: ${TINKERBELL_TINK_USERNAME}
+      TINK_AUTH_PASSWORD: ${TINKERBELL_TINK_PASSWORD}
+      TINK_TLS_ENABLED: "false"
+    depends_on:
+      tink-server-migration:
+        condition: service_started
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- 127.0.0.1:42114/cert"]
+      interval: 5s
+      timeout: 2s
+      retries: 3
+    ports:
+      - 42113:42113/tcp
+      - 42114:42114/tcp
+
+  tink-server-migration:
+    image: quay.io/jakobweinstock/tink:server
+    restart: on-failure
+    environment:
+      ONLY_MIGRATION: "true"
+      FACILITY: ${FACILITY:-onprem}
+      PGDATABASE: tinkerbell
+      PGHOST: db
+      PGPASSWORD: tinkerbell
+      PGPORT: 5432
+      PGSSLMODE: disable
+      PGUSER: tinkerbell
+      TINKERBELL_GRPC_AUTHORITY: :42113
+      TINKERBELL_HTTP_AUTHORITY: :42114
+      TINK_AUTH_USERNAME: ${TINKERBELL_TINK_USERNAME}
+      TINK_AUTH_PASSWORD: ${TINKERBELL_TINK_PASSWORD}
+      TINK_TLS_ENABLED: "false"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:10-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: tinkerbell
+      POSTGRES_PASSWORD: tinkerbell
+      POSTGRES_USER: tinkerbell
+    volumes:
+      - postgres_data:/var/lib/postgresql/data:rw
+    ports:
+      - 5432:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tinkerbell"]
+      interval: 1s
+      timeout: 1s
+      retries: 30
+
+  tink-cli:
+    image: quay.io/jakobweinstock/tink:cli
+    restart: unless-stopped
+    environment:
+      TINKERBELL_GRPC_AUTHORITY: tink:42113
+      TINKERBELL_CERT_URL: http://tink:42114/cert
+      TINK_TLS_ENABLED: "false"
+    depends_on:
+      tink:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+
+  dewey:
+    image: quay.io/jakobweinstock/dewey
+    restart: unless-stopped
+    ports:
+      - 8080:8080
+    environment:
+      DEWEY_TINK_SERVER: tink:42113
+
+  pixecore:
+    image: pixiecore/pixiecore:master
+    restart: unless-stopped
+    network_mode: host
+    command: api http://localhost:8080 --dhcp-no-bind
+
+  bootloaders:
+    image: quay.io/jakobweinstock/tink:bootloaders
+    restart: unless-stopped
+    ports:
+      - 9090:9090
+      
+    
+volumes:
+  postgres_data:

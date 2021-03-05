@@ -1,0 +1,28 @@
+{
+    "id": "ce2e62ed-826f-4485-a39f-a82bb74338e2",
+    "metadata": {
+        "facility": {
+            "facility_code": "onprem",
+            "plan_slug": "c2.medium.x86",
+            "plan_version_slug": ""
+        },
+        "instance": {},
+        "state": "provisioning"
+    },
+    "network": {
+        "interfaces": [
+            {
+                "dhcp": {
+                    "arch": "x86_64",
+                    "mac": "00:50:56:25:11:0e"
+                },
+                "netboot": {
+                    "osie": {
+                        "base_url": "",
+                        "kernel": "https://boot.netboot.xyz/ipxe/netboot.xyz.lkrn"
+                    }
+                }
+            }
+        ]
+    }
+}
