@@ -4,7 +4,7 @@ demo repo for a rethink of the Tinkerbell stack architecture
 
 ## Architecture
 
-![arch](./architecture.png)
+![arch](./architecture.png#1)
 
 ## Prerequisites
 
