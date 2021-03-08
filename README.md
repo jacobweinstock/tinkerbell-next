@@ -28,13 +28,13 @@ docker-compose up -d
 
 ```bash
 # using the hook operating system installation environment
-docker exec -i tinkerbellnext_tink-cli_1 tink hardware push < ./hardware-data/hook.json
+docker exec -i tinkerbell-next_tink-cli_1 tink hardware push < ./hardware-data/hook.json
 
 # using the default OSIE
-docker exec -i tinkerbellnext_tink-cli_1 tink hardware push < ./hardware-data/osie.json
+docker exec -i tinkerbell-next_tink-cli_1 tink hardware push < ./hardware-data/osie.json
 
 # boot to netboot.xyz
-docker exec -i tinkerbellnext_tink-cli_1 tink hardware push < ./hardware-data/netboot-xyz.json
+docker exec -i tinkerbell-next_tink-cli_1 tink hardware push < ./hardware-data/netboot-xyz.json
 ```
 
 3. Boot the machine - make sure the machine you want to PXE is set to boot from the network adapter
